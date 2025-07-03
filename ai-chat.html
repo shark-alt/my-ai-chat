@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple AI Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
+    h2 { color: #3b82f6; }
+    textarea { width: 100%; font-size: 16px; padding: 10px; }
+    button { background: #3b82f6; color: white; border: none; padding: 10px 20px; margin-top: 10px; cursor: pointer; font-size: 16px; border-radius: 5px; }
+    pre { background: white; padding: 10px; margin-top: 15px; border-radius: 5px; min-height: 100px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>Ask AI Anything</h2>
+  <textarea id="input" rows="4" placeholder="Type your question..."></textarea><br/>
+  <button onclick="askAI()">Ask</button>
+  <pre id="response"></pre>
+
+  <script>
+    async function askAI() {
+      const input = document.getElementById('input').value;
+      const responseArea = document.getElementById('response');
+      responseArea.textContent = 'Thinking...';
+
+      // Replace 'YOUR_OPENAI_API_KEY' below with your actual OpenAI API key
+      const apiKey = 'YOUR_OPENAI_API_KEY';
+
+      const data = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: input }]
+      };
+
+      try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify(data)
+        });
+
+        const json = await res.json();
+        if (json.choices && json.choices.length > 0) {
+          responseArea.textContent = json.choices[0].message.content;
+        } else {
+          responseArea.textContent = 'No response from AI.';
+        }
+      } catch (error) {
+        responseArea.textContent = 'Error: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
